@@ -35,7 +35,7 @@ class MemeEngine():
         img = Image.open(image_path)
         ratio = (width / float(img.size[0]))
         height = ratio * float(img.size[1])
-        resize_img = img.resize((width, height), resample=Image.NEAREST)
+        resize_img = img.resize((width, int(height)), resample=Image.NEAREST)
         draw_image = ImageDraw.Draw(resize_img)
         #font = ImageFont.load_default(size=20)
         font = ImageFont.truetype(FONT, 30)
