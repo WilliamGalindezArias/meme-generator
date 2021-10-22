@@ -2,12 +2,14 @@ import random
 import os
 import requests
 from flask import Flask, render_template, abort, request
+from QuoteEngine import QuoteModel, Ingestor
+import MemeEngine
 
 # @TODO Import your Ingestor and MemeEngine classes
 
 app = Flask(__name__)
 
-meme = MemeEngine('./static')
+meme = MemeEngine.MemeEngine('./static')
 
 
 def setup():
@@ -18,15 +20,29 @@ def setup():
                    './_data/DogQuotes/DogQuotesPDF.pdf',
                    './_data/DogQuotes/DogQuotesCSV.csv']
 
-    # TODO: Use the Ingestor class to parse all files in the
+    #TODO: Use the Ingestor class to parse all files in the
     # quote_files variable
-    quotes = None
+
+    #quote_files = ['./_data/DogQuotes/DogQuotesTXT.txt', './_data/DogQuotes/DogQuotesDOCX.docx', './_data/DogQuotes/DogQuotesCSV.csv', './_data/DogQuotes/DogQuotesPDF.pdf' ]
+    quotes = []
+    for file in quote_files:
+        try:
+            quotes.extend(Ingestor.parse(file))
+
+        except ValueError as e:
+            print(f'error: {e}')
 
     images_path = "./_data/photos/dog/"
 
     # TODO: Use the pythons standard library os class to find all
     # images within the images images_path directory
-    imgs = None
+    imgs = []
+
+    for root, dirs, files in os.walk(images_path):
+        imgs = [os.path.join(root, name) for name in files]
+
+
+
 
     return quotes, imgs
 
@@ -43,8 +59,8 @@ def meme_rand():
     # 1. select a random image from imgs array
     # 2. select a random quote from the quotes array
 
-    img = None
-    quote = None
+    img = random.choice(imgs)
+    quote = random.choice(quotes)
     path = meme.make_meme(img, quote.body, quote.author)
     return render_template('meme.html', path=path)
 
@@ -65,8 +81,15 @@ def meme_post():
     # 2. Use the meme object to generate a meme using this temp
     #    file and the body and author form paramaters.
     # 3. Remove the temporary saved image.
+    image_url = request.form['image_url']
+    body = request.form['body']
+    author = request.form['author']
 
-    path = None
+    img_response = requests.get(image_url, allow_redirects=True)
+    tmp = f'./static/{random.randint(0, 100000000)}.jpg'
+    with open(tmp, "wb") as file:
+        file.write(img_response.content)
+    path = meme.make_meme(tmp, body, author)
 
     return render_template('meme.html', path=path)
 

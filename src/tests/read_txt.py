@@ -2,8 +2,7 @@ with open('../_data/SimpleLines/SimpleLines.txt', mode='r') as file:
     lines = file.readlines()
     #print(lines)
     for line in lines:
-        line = line.strip('\n')
-        line = line.split('-')
+        line = line.strip('\n').split('-')
         if len(line) > 1:
             print(line)
             print(line[0], line[1])
