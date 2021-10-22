@@ -19,8 +19,7 @@ class PDFIngestor(IngestorInterface):
         try:
             subprocess.run([cls.pdf_cli, path, cls.temporary_txt_path])
             with open(cls.temporary_txt_path, mode='r') as file:
-
-                for line in file.readlines():
+                for line in file:
                     line = line.strip('\n\r').strip()
                     if len(line) > 0:
                         text_line = line.split('-')
@@ -29,6 +28,7 @@ class PDFIngestor(IngestorInterface):
                 os.remove(cls.temporary_txt_path)
 
                 return quotes
+
 
         except:
             print("Error trying to parse PDF file")
