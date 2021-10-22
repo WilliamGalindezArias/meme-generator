@@ -2,43 +2,153 @@
 
 
 
-## Getting started
+# Project: Meme Generator
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## Overview
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+The goal of this project is to build a "meme generator" – application to dynamically generate memes, 
 
-## Add your files
 
-- [ ] [Create](https://gitlab.com/-/experiment/new_project_readme_content:a534b6e7d598e57ec312b79845a9033e?https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://gitlab.com/-/experiment/new_project_readme_content:a534b6e7d598e57ec312b79845a9033e?https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://gitlab.com/-/experiment/new_project_readme_content:a534b6e7d598e57ec312b79845a9033e?https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+
+## Instructions
+
+We've provided some code and data to get you started. So the first step is to download the starter code and get generally familiar with what it includes.
+
+-   Download the starter code.
+-   Locate the smaple quotes and images of Xander the pup in src/\_data/.
+-   There's a basic flask server that will consume your modules and make them usable through a web interface. Check out the main code for this flaks service in app.py.
+-   Check out the HTML template files in templates/.
+- install pdftext utility for your OS
+
+### Quote Engine
+
+The **Quote Engine** module is responsible for ingesting many types of files that contain quotes. For our purposes, a quote contains a body and an author:
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/python-nd/meme-generator.git
-git branch -M main
-git push -uf origin main
+"This is a quote body" - Author
 ```
 
-## Integrate with your tools
+This module will be composed of many classes and will demonstrate your understanding of complex inheritance, abstract classes, classmethods, strategy objects and other
+fundamental programming principles.
 
-- [ ] [Set up project integrations](https://gitlab.com/-/experiment/new_project_readme_content:a534b6e7d598e57ec312b79845a9033e?https://docs.gitlab.com/ee/user/project/integrations/)
+#### Quote Format
 
-## Collaborate with your team
+Example quotes are provided in a variety of files. Take a moment to review the file formats in ./\_data/SimpleLines and ./\_data/DogQuotes. Your task is to design a system to extract each quote line-by-line from these files.
 
-- [ ] [Invite team members and collaborators](https://gitlab.com/-/experiment/new_project_readme_content:a534b6e7d598e57ec312b79845a9033e?https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://gitlab.com/-/experiment/new_project_readme_content:a534b6e7d598e57ec312b79845a9033e?https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://gitlab.com/-/experiment/new_project_readme_content:a534b6e7d598e57ec312b79845a9033e?https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Automatically merge when pipeline succeeds](https://gitlab.com/-/experiment/new_project_readme_content:a534b6e7d598e57ec312b79845a9033e?https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+#### Ingestors
 
-## Test and Deploy
+An abstract base class, IngestorInterface should define two methods with the following class method signatures:
 
-Use the built-in continuous integration in GitLab.
+```
+def can_ingest(cls, path: str) -> boolean
+def parse(cls, path: str) -> List[QuoteModel]
+```
 
-- [ ] [Get started with GitLab CI/CD](https://gitlab.com/-/experiment/new_project_readme_content:a534b6e7d598e57ec312b79845a9033e?https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://gitlab.com/-/experiment/new_project_readme_content:a534b6e7d598e57ec312b79845a9033e?https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://gitlab.com/-/experiment/new_project_readme_content:a534b6e7d598e57ec312b79845a9033e?https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://gitlab.com/-/experiment/new_project_readme_content:a534b6e7d598e57ec312b79845a9033e?https://docs.gitlab.com/ee/user/clusters/agent/)
+Separate strategy objects should realize **IngestorInterface** for each file type (csv, docx, pdf, txt).
+
+    TIP: pdftotext may not be installed on your local machine (Mac or Windows). If this is the case, you can
+    install using the open source XpdfReader utility.
+
+A final **Ingestor** class should realize the **IngestorInterface** abstract base class and encapsulate your helper
+classes. It should implement logic to select the appropriate helper for a given file based on filetype.
+
+    NOTE: Do not use the pdftotext PIP Library - we'd like you to demonstrate your understanding of the
+    subprocess module.
+
+The responsibility of this module is to load and parse quotes from files. Here's what you'll need to do to complete it:
+
+-   Create a Python module(including **init**.py) in a directory called QuoteEngine.
+-   Example quotes are provided in a varity of files. Take a moment to review the file
+    formats in ./data/SimpleLines and ./data/DogQuotes.
+-   Implement a simple QuoteModel class to encapsulate the body and author.
+-   Implement an abstract base class, IngestorInterface. This class should define two
+    methods with the following class method signatures: def can_ingest(cls, path) -> boolean
+    and def parse(cls, path: str) -> List[QuoteModel].
+-   Implement separate strategy objects that realize the IngestorInterface for each file
+    type(csv, docx, pdf, txt).
+-   Implement a final Ingestor class that realizes the IngestorInterface abstract class
+    and encapsulates your helper classes. It should implement logic to select the appropiate
+    helper for a given file, based on filetype.
+-   If you file, you can check your work against the Quote Engine Module section of the **rubric**.
+-   All Quote classes have clear, concise, and PEP compliant dosctrings.
+-   All code is PEP-8 Compliant.
+-   Common exceptions should be handled using **try-catch** blocks.
+
+### Meme Engine Module
+
+The Meme Engine Module is responsible for manipulating and drawing text onto images. It will reinforce your understanding of object-oriented thinking while demonstrating your skill using a more advanced third party library for image manipulation.
+
+The class must implement code for:
+
+-   Loading an image using Pillow (PIL)
+-   Resizing the image so the width is at most 500px and the height is scaled proportionally.
+-   Adding a quote body and a quote author to the image.
+-   Save the manipulated image.
+-   The class must implement this instance method signature, which returns the path to the manipulated image:
+
+```
+make_meme(self, img_path, text, author, width = 500) -> str
+```
+
+-   You can check your work against the **Meme Generator Module** section of the **rubric**.
+-   All Meme Generator classes have clear, concise, and PEP compliant dosctrings.
+-   All code is PEP-8 Compliant.
+-   Common excpetions should be handled using **try-catch** blocks.
+
+### Package your Application
+
+Larger, complex systems need an interface for users to interact with. We'll package the project as a command line
+tool and as a simple web service.
+
+#### Create a Command-Line Interface tool
+
+The project contains a simple cli app starter code in meme.py. This file contains @TODO tasks for you to complete.
+The utility can be which can be run from the terminal by invoking python3 meme.py.
+
+The script must take three optional CLI arguments:
+
+-   --body a string quote body
+-   --author a string quote author
+-   --path an image path
+
+The script returns a path to a generated image. If any argument is not defined, a random selection is used.
+
+
+
+#### Ingestors sub-module
+
+The submodule Ingestors parse any file (csv, txt, docx, pdf).
+
+-   In the Ingestors interface file exists a class which represents an object and validates if exist the file.
+-   The csv ingestor file reads the csv file and returns a parse.
+-   The docx ingestor file reads the docx file and returns a parse.
+-   The pdf ingestor file reads the pdf file and returns a parse.
+-   The text ingestor file reads the text file and returns a parse.
+
+The dependencies this sub-module uses are:
+
+-   Pandas (read the csv file).
+-   Docx (read the docx file).
+
+#### Meme sub-module
+
+The submodule Meme creates and generates the meme according to the
+path, text, author, width passed.
+
+-   The meme engine file returns the outfile, which the meme image is created and saved .
+-   The meme generator file returns the path where the meme is generated with the Meme Engine class.
+
+The dependencie this sub-module uses is:
+
+-   PIL (adds image processing capabilities).
+
+#### Models
+
+The submodule models creates the class for the Quote and constructs the necessary attributes.
+
+-   The quote model file creates the class Quote model and constructs it, returns a string version and a printable representation of the object.
+
+This sub-module doesn't use dependencies.
 
 ***
 
@@ -49,43 +159,16 @@ When you're ready to make this README your own, just edit this file and use the 
 ## Suggestions for a good README
 Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
 
-## Name
-Choose a self-explaining name for your project.
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
 
 ## Authors and acknowledgment
 Show your appreciation to those who have contributed to the project.
 
 ## License
-For open source projects, say how it is licensed.
+MIT
 
 ## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Passing tests
 
